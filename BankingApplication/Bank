@@ -1,0 +1,85 @@
+package BankingApplication;
+
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+
+public class Bank {
+    private Map<String, BankAccount> accounts;
+    private static final String DATA_FILE = "bank_accounts.dat";
+
+    public Bank() {
+        accounts = new HashMap<>();
+        loadAccounts();
+    }
+
+    public void createAccount(String accountNumber, String accountHolder) {
+        if (!accounts.containsKey(accountNumber)) {
+            BankAccount account = new BankAccount(accountNumber, accountHolder);
+            accounts.put(accountNumber, account);
+            saveAccounts();
+        } else {
+            System.out.println("Account with this number already exists.");
+        }
+    }
+
+    public BankAccount getAccount(String accountNumber) {
+        return accounts.get(accountNumber);
+    }
+
+    public void deposit(String accountNumber, double amount) {
+        BankAccount account = getAccount(accountNumber);
+        if (account != null) {
+            account.deposit(amount);
+            saveAccounts();
+        } else {
+            System.out.println("Account not found.");
+        }
+    }
+
+    public void withdraw(String accountNumber, double amount) {
+        BankAccount account = getAccount(accountNumber);
+        if (account != null) {
+            account.withdraw(amount);
+            saveAccounts();
+        } else {
+            System.out.println("Account not found.");
+        }
+    }
+
+    public void transfer(String fromAccountNumber, String toAccountNumber, double amount) {
+        BankAccount fromAccount = getAccount(fromAccountNumber);
+        BankAccount toAccount = getAccount(toAccountNumber);
+        if (fromAccount != null && toAccount != null) {
+            fromAccount.transfer(toAccount, amount);
+            saveAccounts();
+        } else {
+            System.out.println("One or both accounts not found.");
+        }
+    }
+
+    private void saveAccounts() {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+            out.writeObject(accounts);
+        } catch (IOException e) {
+            System.out.println("Error saving accounts: " + e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void loadAccounts() {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
+            accounts = (HashMap<String, BankAccount>) in.readObject();
+        } catch (FileNotFoundException e) {
+            accounts = new HashMap<>();
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error loading accounts: " + e.getMessage());
+        }
+    }
+
+    public void displayAccounts() {
+        for (BankAccount account : accounts.values()) {
+            System.out.println(account);
+        }
+    }
+}
