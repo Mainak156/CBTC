@@ -1,0 +1,160 @@
+package BankingApplication;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class BankYGUI extends JFrame {
+    private Bank bank;
+
+    public BankYGUI() {
+        bank = new Bank();
+        setTitle("BankY - Banking System");
+        setSize(600, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        JTabbedPane tabbedPane = new JTabbedPane();
+
+        // Create Account Panel
+        JPanel createAccountPanel = new JPanel(new GridLayout(3, 2));
+        JTextField accountNumberField = new JTextField();
+        JTextField accountHolderField = new JTextField();
+        JButton createAccountButton = new JButton("Create Account");
+        createAccountButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String accountNumber = accountNumberField.getText();
+                String accountHolder = accountHolderField.getText();
+                bank.createAccount(accountNumber, accountHolder);
+                JOptionPane.showMessageDialog(null, "Account created successfully.");
+            }
+        });
+        createAccountPanel.add(new JLabel("Account Number:"));
+        createAccountPanel.add(accountNumberField);
+        createAccountPanel.add(new JLabel("Account Holder:"));
+        createAccountPanel.add(accountHolderField);
+        createAccountPanel.add(new JLabel());
+        createAccountPanel.add(createAccountButton);
+
+        // Deposit Panel
+        JPanel depositPanel = new JPanel(new GridLayout(3, 2));
+        JTextField depositAccountField = new JTextField();
+        JTextField depositAmountField = new JTextField();
+        JButton depositButton = new JButton("Deposit");
+        depositButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String accountNumber = depositAccountField.getText();
+                double amount = Double.parseDouble(depositAmountField.getText());
+                bank.deposit(accountNumber, amount);
+                JOptionPane.showMessageDialog(null, "Deposit successful.");
+            }
+        });
+        depositPanel.add(new JLabel("Account Number:"));
+        depositPanel.add(depositAccountField);
+        depositPanel.add(new JLabel("Amount:"));
+        depositPanel.add(depositAmountField);
+        depositPanel.add(new JLabel());
+        depositPanel.add(depositButton);
+
+        // Withdraw Panel
+        JPanel withdrawPanel = new JPanel(new GridLayout(3, 2));
+        JTextField withdrawAccountField = new JTextField();
+        JTextField withdrawAmountField = new JTextField();
+        JButton withdrawButton = new JButton("Withdraw");
+        withdrawButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String accountNumber = withdrawAccountField.getText();
+                double amount = Double.parseDouble(withdrawAmountField.getText());
+                bank.withdraw(accountNumber, amount);
+                JOptionPane.showMessageDialog(null, "Withdrawal successful.");
+            }
+        });
+        withdrawPanel.add(new JLabel("Account Number:"));
+        withdrawPanel.add(withdrawAccountField);
+        withdrawPanel.add(new JLabel("Amount:"));
+        withdrawPanel.add(withdrawAmountField);
+        withdrawPanel.add(new JLabel());
+        withdrawPanel.add(withdrawButton);
+
+        // Transfer Panel
+        JPanel transferPanel = new JPanel(new GridLayout(4, 2));
+        JTextField fromAccountField = new JTextField();
+        JTextField toAccountField = new JTextField();
+        JTextField transferAmountField = new JTextField();
+        JButton transferButton = new JButton("Transfer");
+        transferButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String fromAccount = fromAccountField.getText();
+                String toAccount = toAccountField.getText();
+                double amount = Double.parseDouble(transferAmountField.getText());
+                bank.transfer(fromAccount, toAccount, amount);
+                JOptionPane.showMessageDialog(null, "Transfer successful.");
+            }
+        });
+        transferPanel.add(new JLabel("From Account:"));
+        transferPanel.add(fromAccountField);
+        transferPanel.add(new JLabel("To Account:"));
+        transferPanel.add(toAccountField);
+        transferPanel.add(new JLabel("Amount:"));
+        transferPanel.add(transferAmountField);
+        transferPanel.add(new JLabel());
+        transferPanel.add(transferButton);
+
+        //Close Account Panel
+        JPanel closeAccountPanel = new JPanel(new GridLayout(2, 2));
+        JTextField closeAccountField = new JTextField();
+        JButton closeAccountButton = new JButton("Close Account");
+        closeAccountButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String accountNumber = closeAccountField.getText();
+                bank.closeAccount(accountNumber);
+                JOptionPane.showMessageDialog(null, "Account closed successfully.");
+            }
+        });
+        closeAccountPanel.add(new JLabel("Account Number:"));
+        closeAccountPanel.add(closeAccountField);
+        closeAccountPanel.add(new JLabel());
+        closeAccountPanel.add(closeAccountButton);
+
+        // Display Accounts Panel
+        JPanel displayPanel = new JPanel(new BorderLayout());
+        JTextArea displayTextArea = new JTextArea();
+        JButton displayButton = new JButton("Display Accounts");
+        displayButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displayTextArea.setText("");
+                for (BankAccount account : bank.getAccounts().values()) {
+                    displayTextArea.append(account.toString() + "\n");
+                }
+            }
+        });
+        displayPanel.add(new JScrollPane(displayTextArea), BorderLayout.CENTER);
+        displayPanel.add(displayButton, BorderLayout.SOUTH);
+
+        tabbedPane.add("Create Account", createAccountPanel);
+        tabbedPane.add("Deposit", depositPanel);
+        tabbedPane.add("Withdraw", withdrawPanel);
+        tabbedPane.add("Transfer", transferPanel);
+        tabbedPane.add("Close Account", closeAccountPanel);
+        tabbedPane.add("Display Accounts", displayPanel);
+
+        add(tabbedPane, BorderLayout.CENTER);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                BankYGUI frame = new BankYGUI();
+                frame.setVisible(true);
+            }
+        });
+    }
+}
