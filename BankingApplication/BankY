@@ -1,0 +1,66 @@
+package BankingApplication;
+
+import java.util.Scanner;
+
+public class BankY {
+    public static void main(String[] args) {
+        Bank bank = new Bank();
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\nBankY Main Menu");
+            System.out.println("1. Create Account");
+            System.out.println("2. Deposit");
+            System.out.println("3. Withdraw");
+            System.out.println("4. Transfer");
+            System.out.println("5. Display Accounts");
+            System.out.println("6. Exit");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();  // consume newline
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter account number: ");
+                    String accountNumber = scanner.nextLine();
+                    System.out.print("Enter account holder: ");
+                    String accountHolder = scanner.nextLine();
+                    bank.createAccount(accountNumber, accountHolder);
+                    break;
+                case 2:
+                    System.out.print("Enter account number: ");
+                    accountNumber = scanner.nextLine();
+                    System.out.print("Enter amount to deposit: ");
+                    double depositAmount = scanner.nextDouble();
+                    bank.deposit(accountNumber, depositAmount);
+                    break;
+                case 3:
+                    System.out.print("Enter account number: ");
+                    accountNumber = scanner.nextLine();
+                    System.out.print("Enter amount to withdraw: ");
+                    double withdrawAmount = scanner.nextDouble();
+                    bank.withdraw(accountNumber, withdrawAmount);
+                    break;
+                case 4:
+                    System.out.print("Enter source account number: ");
+                    String fromAccountNumber = scanner.nextLine();
+                    System.out.print("Enter destination account number: ");
+                    String toAccountNumber = scanner.nextLine();
+                    System.out.print("Enter amount to transfer: ");
+                    double transferAmount = scanner.nextDouble();
+                    bank.transfer(fromAccountNumber, toAccountNumber, transferAmount);
+                    break;
+                case 5:
+                    bank.displayAccounts();
+                    break;
+                case 6:
+                    System.out.println("Exiting BankY.");
+                    scanner.close();
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+}
