@@ -1,0 +1,115 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Random;
+
+public class NumberGuessingGame extends JFrame implements ActionListener {
+
+    JLabel heading= new JLabel("Number Guessing Game");
+    JLabel guessRequest= new JLabel("Guess the number");
+    JTextField enterNum= new JTextField();
+    JButton guess= new JButton("Guess");
+    JButton reset= new JButton("Reset");
+    JLabel status= new JLabel("10 guesses are allowed!!!");
+    JLabel dispScore= new JLabel("");
+    Random random = new Random();
+    int randomNumber= 0;
+    float score= 0;
+    int guesses = 0;
+    int lim= 0;
+
+    NumberGuessingGame(int limit){
+
+        lim= limit;
+        setSize(500, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setResizable(false);
+        setLayout(null);
+        getContentPane().setBackground(new Color(45, 45, 62));
+
+        heading.setFont(new Font("Times New Roman", Font.BOLD, 26));
+        heading.setBounds(100, 10, 400, 60);
+        heading.setForeground(Color.WHITE);
+        add(heading);
+
+        guessRequest.setFont(new Font("Sans Serif", Font.ITALIC, 20));
+        guessRequest.setBounds(160, 90, 200, 20);
+        guessRequest.setForeground(Color.WHITE);
+        add(guessRequest);
+
+        enterNum.setFont(new Font("Sans Serif", Font.ITALIC, 18));
+        enterNum.setBounds(80, 160, 200, 30);
+        guessRequest.setForeground(Color.WHITE);
+        add(enterNum);
+
+        guess.setFont(new Font("Sans Serif", Font.ITALIC, 16));
+        guess.setBounds(300, 160, 120, 30);
+        guess.addActionListener(this);
+        add(guess);
+
+        reset.setFont(new Font("Sans Serif", Font.ITALIC, 16));
+        reset.setBounds(350, 320, 120, 30);
+        reset.addActionListener(this);
+        add(reset);
+
+        status.setFont(new Font("Monospaced", Font.CENTER_BASELINE, 30));
+        status.setBounds(20, 250, 480, 50);
+        status.setForeground(Color.WHITE);
+        add(status);
+
+        dispScore.setFont(new Font("Monospaced", Font.CENTER_BASELINE, 24));
+        dispScore.setBounds(100, 300, 480, 40);
+        dispScore.setForeground(Color.WHITE);
+        add(dispScore);
+
+        setVisible(true);
+
+        randomNumber = random.nextInt(lim) + 1;
+
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+        if (e.getSource() == guess) {
+            String guessText = enterNum.getText();
+            try {
+                int guess = Integer.parseInt(guessText);
+                if (guess == randomNumber) {
+                    guesses++;
+                    status.setText("Congrats! Correct Guess.");
+                    if (guesses <= 10){
+                        score = (5 * guesses); // 5 points for each guess
+                    } else {
+                        score = 50 - (((float)(guesses - 10) / guesses) * 2); // Penalty of 2 points for each extra guess
+                    }
+                    dispScore.setText("Score: "+score);
+                    System.out.println(guesses);
+                } else if (guess < randomNumber) {
+                    status.setText("Too low. Try again.");
+                    guesses++;
+                } else {
+                    status.setText("Too high. Try again.");
+                    guesses++;
+                }
+            } catch (NumberFormatException ex) {
+                status.setText("Invalid input!!! NaN");
+            }
+            enterNum.setText("");
+        } else if (e.getSource() == reset){
+            randomNumber = random.nextInt(lim) + 1;
+            score= 0;
+            guesses= 0;
+            status.setText("10 guesses are allowed!!!");
+            dispScore.setText("");
+        }
+
+    }
+
+    public static void main(String[] args) {
+        new NumberGuessingGame(100); //flexible range -- can be changed
+    }
+
+}
