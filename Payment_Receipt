@@ -1,0 +1,112 @@
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+import os
+
+# Constants
+COMPANY_NAME = input("Enter company name: ")
+COMPANY_ADDRESS = input("Enter company address: ")
+RECEIPT_NUMBER = input("Enter receipt number: ")
+RECEIPT_DATE = input("Enter receipt date: ")
+PO_NUMBER = input("Enter P.O. number: ")
+DUE_DATE = input("Enter due date: ")
+BILL_TO_NAME = input("Enter billing name: ")
+BILL_TO_ADDRESS = input("Enter billing address: ")
+SHIP_TO_NAME = input("Enter shipping name: ")
+SHIP_TO_ADDRESS = input("Enter shipping address: ")
+NOI = int(input("Enter the number of items: "))
+ITEMS = []
+for i in range(NOI):
+    DESC = input("Enter item name: ")
+    QTY = int(input("Enter quantity purchased: "))
+    UNIT_PRICE = float(input("Enter price of the item: "))
+    TOTAL_AMT = QTY * UNIT_PRICE
+    ITEMS.append({"description": DESC, "qty": QTY, "unit_price": UNIT_PRICE, "amount": TOTAL_AMT})
+
+SUBTOTAL = 0
+for i in ITEMS:
+    SUBTOTAL += i['amount']
+
+SALES_TAX_RATE = float(input("Enter sales tax (in decimal format): "))
+SALES_TAX = round(SUBTOTAL * SALES_TAX_RATE, 2)
+TOTAL = SUBTOTAL + SALES_TAX
+TERMS_CONDITIONS = f"Please make checks payable to: {COMPANY_NAME}"
+
+
+# Create PDF
+def create_receipt_pdf(file_path):
+    c = canvas.Canvas(file_path, pagesize=letter)
+    width, height = letter
+
+    # Draw company name and address
+    c.setFont("Helvetica-Bold", 20)
+    c.drawString(30, height - 30, COMPANY_NAME)
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(30, height - 80, COMPANY_ADDRESS)
+
+    # Draw receipt details
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(400, height - 80, f"RECEIPT #: {RECEIPT_NUMBER}")
+    c.drawString(400, height - 95, f"RECEIPT DATE: {RECEIPT_DATE}")
+    c.drawString(400, height - 110, f"P.O. #: {PO_NUMBER}")
+    c.drawString(400, height - 125, f"DUE DATE: {DUE_DATE}")
+
+    # Draw billing and shipping information
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(30, height - 150, "BILL TO")
+    c.drawString(300, height - 150, "SHIP TO")
+    c.setFont("Helvetica", 10)
+    c.drawString(30, height - 165, BILL_TO_NAME)
+    c.drawString(30, height - 180, BILL_TO_ADDRESS)
+    c.drawString(300, height - 165, SHIP_TO_NAME)
+    c.drawString(300, height - 180, SHIP_TO_ADDRESS)
+
+    # Draw itemized list
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(30, height - 220, "QTY")
+    c.drawString(100, height - 220, "DESCRIPTION")
+    c.drawString(400, height - 220, "UNIT PRICE")
+    c.drawString(500, height - 220, "AMOUNT")
+
+    y = height - 240
+    c.setFont("Helvetica", 10)
+    for item in ITEMS:
+        c.drawString(30, y, str(item["qty"]))
+        c.drawString(100, y, item["description"])
+        c.drawString(400, y, f"{item['unit_price']:.2f}")
+        c.drawString(500, y, f"{item['amount']:.2f}")
+        y -= 15
+
+    # Draw totals
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(400, y - 20, "Subtotal:")
+    c.drawString(500, y - 20, f"{SUBTOTAL:.2f}")
+    c.drawString(400, y - 35, f"Sales Tax ({SALES_TAX_RATE * 100:.2f}%):")
+    c.drawString(550, y - 35, f"{SALES_TAX:.2f}")
+    c.drawString(400, y - 50, "TOTAL:")
+    c.drawString(500, y - 50, f"{TOTAL:.2f}")
+
+    # Draw terms and conditions
+    c.setFont("Helvetica", 10)
+    c.drawString(30, y - 100, "TERMS & CONDITIONS")
+    text = c.beginText(30, y - 115)
+    text.setFont("Helvetica", 10)
+    text.textLines(TERMS_CONDITIONS)
+    c.drawText(text)
+
+    # Draw signature
+    c.drawString(30, y - 160, f"{BILL_TO_NAME}")
+    c.line(30, y - 165, 100, y - 165)
+
+    # Save the PDF
+    c.showPage()
+    c.save()
+
+
+# Generate receipt PDF
+path = f"{BILL_TO_NAME}_receipt.pdf"
+create_receipt_pdf(path)
+
+if os.path.exists(path):
+    print("File saved!")
+else:
+    print("File was not saved!")
